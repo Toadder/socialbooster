@@ -89,51 +89,38 @@ function anchorLinks() {
 }
 
 // Lazyloading
-function lazyloading() {
-  const lazyImages = document.querySelectorAll(
-    "img[data-src], source[data-srcset]"
-  );
-  const windowHeight = document.documentElement.clientHeight;
+function lazyload() {
+  window.onload = () => {
+    const options = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.1,
+    };
 
-  let lazyImagesPositions = [];
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
 
-  if (lazyImages.length > 0) {
-    lazyImages.forEach((img) => {
-      if (img.dataset.src || img.dataset.srcset) {
-        img.style.opacity = "0";
-        lazyImagesPositions.push(img.getBoundingClientRect().top + pageYOffset);
-        lazyScrollCheck();
-      }
-    });
-  }
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.removeAttribute("data-src");
+          } else if (img.dataset.srcset) {
+            img.srcset = img.dataset.srcset;
+            img.removeAttribute("data-srcset");
+          }
 
-  window.addEventListener("scroll", lazyScroll);
+          img.classList.add("_lazy-loaded");
+          observer.unobserve(img);
+        }
+      });
+    }, options);
 
-  function lazyScroll() {
-    if (
-      document.querySelectorAll("img[data-src], source[data-srcset]").length > 0
-    ) {
-      lazyScrollCheck();
-    }
-  }
-
-  function lazyScrollCheck() {
-    let imgIndex = lazyImagesPositions.findIndex(
-      (item) => pageYOffset > item - windowHeight
+    const lazyImages = document.querySelectorAll(
+      "img[data-src], source[data-srcset]"
     );
-
-    if (imgIndex >= 0) {
-      if (lazyImages[imgIndex].dataset.src) {
-        lazyImages[imgIndex].src = lazyImages[imgIndex].dataset.src;
-        lazyImages[imgIndex].removeAttribute("data-src");
-      } else if (lazyImages[imgIndex].dataset.srcset) {
-        lazyImages[imgIndex].srcset = lazyImages[imgIndex].dataset.srcset;
-        lazyImages[imgIndex].removeAttribute("data-srcset");
-      }
-      lazyImages[imgIndex].classList.add("_lazy-loaded");
-      delete lazyImagesPositions[imgIndex];
-    }
-  }
+    lazyImages.forEach((img) => observer.observe(img));
+  };
 }
 
 // Dynamic Adaptive
@@ -277,10 +264,13 @@ class DynamicAdapt {
   }
 }
 
-lazyloading();
+// lazyloading();
 headerHandler();
 isWebp();
 anchorLinks();
+lazyload();
 
+// ---> Dynamic Adaptive <---
 const da = new DynamicAdapt("max");
 da.init();
+// ---> Dynamic Adaptive <---

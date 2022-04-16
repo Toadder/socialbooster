@@ -227,9 +227,29 @@ body._lock {
   color: #f67555;
 }
 
+picture {
+  display: block;
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+source {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+img {
+  opacity: 0;
+}
+
 img._lazy-loaded {
-  transition: all 0.5s ease 0.2s;
-  opacity: 1 !important;
+  transition: all 0.5s ease 0.25s;
+  opacity: 1;
 }
 
 .about {
@@ -791,6 +811,10 @@ img._lazy-loaded {
   flex: 0 0 45.5%;
   padding-bottom: 65%;
   position: relative;
+}
+
+.more__img picture {
+  position: static;
 }
 
 .more__img img {
