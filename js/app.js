@@ -110,7 +110,9 @@ function lazyload() {
             img.removeAttribute("data-srcset");
           }
 
-          img.classList.add("_lazy-loaded");
+          img.onload = () => {
+            img.classList.add("_lazy-loaded");
+          };
           observer.unobserve(img);
         }
       });
